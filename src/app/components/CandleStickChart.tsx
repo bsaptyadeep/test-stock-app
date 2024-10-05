@@ -2,7 +2,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import DisplayChart from './DisplayChart'
 import { CandlestickData, Time } from 'lightweight-charts';
-import ChartManager from './ChartManager';
 import { IKlineData, SettingsToolContext, Timeframe } from '../page';
 import { fetchCandlestickData } from '@/utils/historicalDataHelper';
 import { getLivePriceUsingWebSockets } from '@/api/binance';

@@ -1,14 +1,6 @@
-import { Time } from "lightweight-charts";
+import { IKlineData } from "@/app/page";
 
-interface PriceData {
-    open: number;
-    high: number;
-    low: number;
-    close: number;
-    time: Time;
-}
-
-export function calculateBollingerBands(data: PriceData[], period: number, numStdDev: number) {
+export function calculateBollingerBands(data: IKlineData[], period: number, numStdDev: number) {
     // Function to calculate the Simple Moving Average (SMA)
     const calculateSMA = (data: number[], period: number) => {
         const sum = data.slice(-period).reduce((acc, val) => acc + val, 0);
@@ -51,4 +43,16 @@ export function calculateBollingerBands(data: PriceData[], period: number, numSt
 
     return result;
 }
+
+export const calculateFibonacciLevels = (high: number, low: number) => {
+    const diff = high - low;
+    return {
+      '0%': low,
+      '23.6%': high - diff * 0.236,
+      '38.2%': high - diff * 0.382,
+      '50%': high - diff * 0.5,
+      '61.8%': high - diff * 0.618,
+      '100%': high,
+    };
+  };
 

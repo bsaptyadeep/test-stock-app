@@ -37,15 +37,6 @@ const ToolsModal = (props: IProps) => {
                             Bollinger Band
                         </p>
                     </Button>
-                    <Button
-                        onClick={() => {
-                            props.setCurrentSettingsOption("fibonacci-retracement")
-                        }}
-                        variant={props.currentSettingsOption === "fibonacci-retracement" ? 'contained' : 'outlined'}>
-                        <p>
-                            Fibonacci Retracement
-                        </p>
-                    </Button>
                 </Box>
                 {
                     props.currentSettingsOption === "bollinger-bands" ?

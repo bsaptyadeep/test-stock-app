@@ -1,7 +1,7 @@
 "use client"
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { CandlestickData, createChart, CrosshairMode, IChartApi, ISeriesApi, Time } from 'lightweight-charts';
-import { calculateBollingerBands } from '@/utils/indicators';
+import { CandlestickData, createChart, CrosshairMode, IChartApi, ISeriesApi, LineStyle, Time } from 'lightweight-charts';
+import { calculateBollingerBands, calculateFibonacciLevels } from '@/utils/indicators';
 import HandymanIcon from '@mui/icons-material/Handyman';
 import { Box, IconButton, Tooltip } from '@mui/material';
 import { IKlineData, SettingsToolContext } from '../page';
@@ -26,6 +26,7 @@ const DisplayChart = (props: IProps) => {
   const [candlestickSeries, setCandlestickSeries] = useState<ISeriesApi<"Candlestick"> | null>(null);
   const [isDrawingLine, setIsDrawingLine] = useState<boolean>(false)
   const [startingPoint, setStartingPoint] = useState<{ time: Time, value: number } | null>(null);
+  const [endingPoint, setEndingPoint] = useState<{ time: Time, value: number } | null>(null);
   const [candleStickChart, setCandleStickChart] = useState<IChartApi | null>(null);
   const [clickPoint, setClickPoint] = useState<{ time: Time, value: number } | null>(null)
   const [cursorPoint, setCursorPoint] = useState<{ time: Time, value: number } | null>(null);
@@ -81,6 +82,7 @@ const DisplayChart = (props: IProps) => {
           setClickPoint({ time: xTs, value: yPrice })
         }
       }
+
       function myCrosshairMoveHandler(param: any) {
         if (!param.point) {
           return;
@@ -91,6 +93,7 @@ const DisplayChart = (props: IProps) => {
           setClickPoint({ time: xTs, value: yPrice })
         }
       }
+      
       chart.subscribeClick(myClickHandler)
       chart.subscribeCrosshairMove(myCrosshairMoveHandler)
       return () => {
@@ -175,18 +178,109 @@ const DisplayChart = (props: IProps) => {
 
   useEffect(() => {
     if (candleStickChart && isDrawingLine) {
-      const fibbonaciRetracementSeries = candleStickChart.addLineSeries({ color: "gray", lineWidth: 1 });
+
       if (startingPoint && clickPoint) {
-        fibbonaciRetracementSeries.setData([startingPoint, clickPoint])
         setStartingPoint(null)
         setIsDrawingLine(false)
+        try {
+          drawFiboRetracement(candleStickChart, startingPoint, clickPoint)
+        } catch (error) {
+          console.error("wrong click")
+        }
       }
       else if (clickPoint) {
-        fibbonaciRetracementSeries.setData([clickPoint])
         setStartingPoint(clickPoint);
       }
     }
   }, [clickPoint, candleStickChart])
+
+  const drawFiboRetracement = (chart: IChartApi, startP:  {
+    time: Time;
+    value: number;
+}, currentP:  {
+  time: Time;
+  value: number;
+}) => {
+    const fibbonaciRetracementSeries_1 = chart.addLineSeries({
+      color: 'rgba(0, 128, 255, 1)',   // Line color separating the area
+      lineWidth: 2,
+    });
+
+    const fibbonaciRetracementSeries_2 = chart.addLineSeries({
+      color: 'rgba(89, 245, 39, 0.8)',   // Line color separating the area
+      lineWidth: 2,
+    });
+
+    const fibbonaciRetracementSeries_3 = chart.addLineSeries({
+      color: 'rgba(245, 39, 93, 0.8)',   // Line color separating the area
+      lineWidth: 2,
+    });
+
+    const fibbonaciRetracementSeries_4 = chart.addLineSeries({
+      color: 'rgba(0, 128, 255, 1)',   // Line color separating the area
+      lineWidth: 2,
+    });
+
+    const fibbonaciRetracementSeries_5 = chart.addLineSeries({
+      color: 'rgba(226, 245, 39, 0.8)',   // Line color separating the area
+      lineWidth: 2,
+    });
+
+    const fibbonaciRetracementSeries_6 = chart.addLineSeries({
+      color: 'rgba(49, 39, 245, 0.8)',   // Line color separating the area
+      lineWidth: 2,
+    });
+
+    const fibLevels = calculateFibonacciLevels(Math.max(startP?.value, currentP.value), Math.min(startP?.value, currentP.value));
+    fibbonaciRetracementSeries_1.setData([
+      {
+        time: startP.time, value: fibLevels['0%']
+      },
+      {
+        time: currentP?.time, value: fibLevels['0%']
+      },
+    ])
+    fibbonaciRetracementSeries_2.setData([
+      {
+        time: startP.time, value: fibLevels['100%']
+      },
+      {
+        time: currentP?.time, value: fibLevels['100%']
+      },
+    ])
+    fibbonaciRetracementSeries_3.setData([
+      {
+        time: startP.time, value: fibLevels['23.6%']
+      },
+      {
+        time: currentP?.time, value: fibLevels['23.6%']
+      },
+    ])
+    fibbonaciRetracementSeries_4.setData([
+      {
+        time: startP.time, value: fibLevels['38.2%']
+      },
+      {
+        time: currentP?.time, value: fibLevels['38.2%']
+      },
+    ])
+    fibbonaciRetracementSeries_5.setData([
+      {
+        time: startP.time, value: fibLevels['50%']
+      },
+      {
+        time: currentP?.time, value: fibLevels['50%']
+      },
+    ])
+    fibbonaciRetracementSeries_6.setData([
+      {
+        time: startP.time, value: fibLevels['61.8%']
+      },
+      {
+        time: currentP?.time, value: fibLevels['61.8%']
+      },
+    ])
+  }
 
   return (
     <Box className='flex flex-col items-center justify-center'>

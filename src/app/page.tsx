@@ -35,6 +35,23 @@ interface ISettingsToolContext {
 
 export type Timeframe = '1m' | '5m' | '1h' | '1d' | '1M';
 
+const timeframeOptions = [{
+  label: "1 minute",
+  value: "1m"
+}, {
+  label: "5 minutes",
+  value: "5m"
+}, {
+  label: "1 hour",
+  value: "1h"
+},{
+  label: "1 day",
+  value: "1d"
+},{
+  label: "1 month",
+  value: "1M"
+}]
+
 export type ChartType = 'historical' | 'realtime';
 
 // Create the context with default values
@@ -77,7 +94,7 @@ export default function Home() {
         <main className='absolute top-0 bottom-0 left-0 right-0 flex flex-col p-5'>
           <h1>BTC-USD Price Chart</h1>
           <CandleStickChart />
-          <Box className='max-w-sm mx-auto p-2 bg-white rounded-lg shadow-lg flex flex-row items-center justify-center gap-5'>
+          <Box className='mx-auto p-2 bg-white rounded-lg shadow-lg flex flex-row items-center justify-center gap-5'>
             <Tooltip title='Trading Tools'>
               <IconButton onClick={() => {
                 openSettingsModel()
@@ -85,26 +102,31 @@ export default function Home() {
                 <HandymanIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title='Interval'>
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Age</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={timeFrame}
-                  label="Timeframe"
-                  onChange={(event: SelectChangeEvent) => {
-                    setTimeFrame(event.target.value as string as Timeframe)
-                  }}
-                >
-                  <MenuItem value={'1m'}>1 minute</MenuItem>
-                  <MenuItem value={'5m'}>5 minutes</MenuItem>
-                  <MenuItem value={'1h'}>1 hour</MenuItem>
-                  <MenuItem value={'1d'}>1 day</MenuItem>
-                  <MenuItem value={'1M'}>1 month</MenuItem>
-                </Select>
-              </FormControl>
-              </Tooltip>
+            <Box className='flex flex-row items-center justify-center gap-4 flex-wrap'>
+              <Box className='flex flex-row gap-4'>
+              {
+                timeframeOptions.map((option) => {
+                  return (
+                    <Box className={`${option.value === timeFrame&&"bg-gray-300 text-white"} text-gray-800 flex flex-row px-3 py-1 rounded-sm cursor-pointer`}
+                    onClick={() => {
+                      setTimeFrame(option.value as Timeframe)
+                    }}
+                    >
+                      {
+                        option.label
+                      }
+                    </Box>
+                  )
+                })
+              }
+              </Box>
+              <Box>
+                Show Bollinger Band
+              </Box>
+              <Box>
+                Draw Fibonacci Retracement
+              </Box>
+            </Box>
           </Box>
           {
             showSettingsModal &&
