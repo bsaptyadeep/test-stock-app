@@ -33,6 +33,7 @@ const DisplayChart = (props: IProps) => {
   const middlebollingerBandSeriesRef = useRef<ISeriesApi<"Line"> | null>(null)
   const upperbollingerBandSeriesRef = useRef<ISeriesApi<"Line"> | null>(null)
   const lowerbollingerBandSeriesRef = useRef<ISeriesApi<"Line"> | null>(null)
+  const [isRemovedBollingerBand, setIsRemovedBollingerBand] = useState<boolean>(true);
 
   // Draw candle-stick
   useEffect(() => {
@@ -133,16 +134,18 @@ const DisplayChart = (props: IProps) => {
 
   // Draw Bollinger Band
   useEffect(() => {
-    if(settingsToolContext && candleStickChart) {
+    if(settingsToolContext?.showingBollingerBand && candleStickChart) {
       // remove if previous Bollinger Band exists
-      if(middlebollingerBandSeriesRef.current) {
-        candleStickChart.removeSeries(middlebollingerBandSeriesRef.current)
-      }
-      if(upperbollingerBandSeriesRef.current) {
-        candleStickChart.removeSeries(upperbollingerBandSeriesRef.current)
-      }
-      if(lowerbollingerBandSeriesRef.current) {
-        candleStickChart.removeSeries(lowerbollingerBandSeriesRef.current)
+      if(!isRemovedBollingerBand) {
+        if(middlebollingerBandSeriesRef.current) {
+          candleStickChart.removeSeries(middlebollingerBandSeriesRef.current)
+        }
+        if(upperbollingerBandSeriesRef.current) {
+          candleStickChart.removeSeries(upperbollingerBandSeriesRef.current)
+        }
+        if(lowerbollingerBandSeriesRef.current) {
+          candleStickChart.removeSeries(lowerbollingerBandSeriesRef.current)
+        }  
       }
 
       const bollingerBands = calculateBollingerBands(props.candleStickData, settingsToolContext?.bollingerBand.period, settingsToolContext?.bollingerBand.stdDeviation);
@@ -173,10 +176,23 @@ const DisplayChart = (props: IProps) => {
           value: band.lowerBand
         }
       })])
+      setIsRemovedBollingerBand(false)
+    } else if(!settingsToolContext?.showingBollingerBand && candleStickChart && !isRemovedBollingerBand) {
+      if(middlebollingerBandSeriesRef.current) {
+        candleStickChart.removeSeries(middlebollingerBandSeriesRef.current)
+      }
+      if(upperbollingerBandSeriesRef.current) {
+        candleStickChart.removeSeries(upperbollingerBandSeriesRef.current)
+      }
+      if(lowerbollingerBandSeriesRef.current) {
+        candleStickChart.removeSeries(lowerbollingerBandSeriesRef.current)
+      }
+      setIsRemovedBollingerBand(true)
     }
-  }, [candleStickChart, settingsToolContext, props.candleStickData])
+  }, [candleStickChart, settingsToolContext?.showingBollingerBand, props.candleStickData, settingsToolContext?.timeFrame, settingsToolContext?.bollingerBand])
 
   useEffect(() => {
+    console.log("testing~isDrawingFibo", settingsToolContext?.isDrawingFibo )
     if (candleStickChart && isDrawingLine) {
 
       if (startingPoint && clickPoint) {

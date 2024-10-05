@@ -30,7 +30,15 @@ interface ISettingsToolContext {
   timeFrame: Timeframe;
   setTimeFrame: Dispatch<SetStateAction<Timeframe>>,
   selectedChartType: ChartType
-  setSelectedChartType: Dispatch<SetStateAction<ChartType>>
+  setSelectedChartType: Dispatch<SetStateAction<ChartType>>,
+  setShowingBollingerBand: Dispatch<SetStateAction<boolean>>,
+  showingBollingerBand: boolean,
+  isDrawingFibo: boolean,
+  setIsDrawingFibo: Dispatch<SetStateAction<boolean>>
+  showVolumeGraph: boolean,
+  setShowVolumeGraph: Dispatch<SetStateAction<boolean>>,
+  showDeleteFib: boolean,
+  setShowDeleteFibo: Dispatch<SetStateAction<boolean>>
 }
 
 export type Timeframe = '1m' | '5m' | '1h' | '1d' | '1M';
@@ -65,7 +73,10 @@ export default function Home() {
     stdDeviation: 5
   })
   const [selectedChartType, setSelectedChartType] = useState<ChartType>('realtime');
-
+  const [showingBollingerBand, setShowingBollingerBand] = useState<boolean>(false);
+  const [isDrawingFibo, setIsDrawingFibo] = useState<boolean>(false);
+  const [showDeleteFib, setShowDeleteFibo] = useState<boolean>(false);
+  const [showVolumeGraph, setShowVolumeGraph] = useState<boolean>(false);
   const [timeFrame, setTimeFrame] = useState<Timeframe>('1m')
 
   const openSettingsModel = () => {
@@ -83,7 +94,10 @@ export default function Home() {
       timeFrame: timeFrame,
       setTimeFrame: setTimeFrame,
       selectedChartType: selectedChartType,
-      setSelectedChartType: setSelectedChartType }}>
+      setSelectedChartType: setSelectedChartType,
+      showingBollingerBand: showingBollingerBand,
+      setShowingBollingerBand: setShowingBollingerBand,
+      isDrawingFibo, setIsDrawingFibo, showDeleteFib, setShowDeleteFibo, showVolumeGraph, setShowVolumeGraph }}>
       <div>
         <Head>
           <title>BTC-USD Chart</title>
@@ -94,7 +108,7 @@ export default function Home() {
         <main className='absolute top-0 bottom-0 left-0 right-0 flex flex-col p-5'>
           <h1>BTC-USD Price Chart</h1>
           <CandleStickChart />
-          <Box className='mx-auto p-2 bg-white rounded-lg shadow-lg flex flex-row items-center justify-center gap-5'>
+          <Box className='mx-auto p-2 bg-white rounded-lg shadow-lg flex flex-row items-center justify-center gap-5 flex-wrap'>
             <Tooltip title='Trading Tools'>
               <IconButton onClick={() => {
                 openSettingsModel()
@@ -103,7 +117,7 @@ export default function Home() {
               </IconButton>
             </Tooltip>
             <Box className='flex flex-row items-center justify-center gap-4 flex-wrap'>
-              <Box className='flex flex-row gap-4'>
+              <Box className='flex flex-row gap-4 flex-wrap'>
               {
                 timeframeOptions.map((option) => {
                   return (
@@ -120,11 +134,28 @@ export default function Home() {
                 })
               }
               </Box>
-              <Box>
+              <Box
+              onClick = {() => {
+                setShowingBollingerBand(prevState => !prevState)
+              }}
+               className={`${showingBollingerBand&&"bg-gray-300 text-white"} text-gray-800 flex flex-row px-3 py-1 rounded-sm cursor-pointer`}>
                 Show Bollinger Band
               </Box>
-              <Box>
-                Draw Fibonacci Retracement
+              <Box 
+              onClick = {() => {
+                setIsDrawingFibo(prevState => !prevState)
+              }}
+              className={`${isDrawingFibo&&"bg-gray-300 text-white"} text-gray-800 flex flex-row px-3 py-1 rounded-sm cursor-pointer`}>
+                {
+                  showDeleteFib?
+                 "Delete Fibonacci Retracement": "Draw Fibonacci Retracement"}
+              </Box>
+              <Box
+              onClick = {() => {
+                setShowVolumeGraph(prevState => !prevState)
+              }} 
+              className={`${showVolumeGraph&&"bg-gray-300 text-white"} text-gray-800 flex flex-row px-3 py-1 rounded-sm cursor-pointer`}>
+                Show Volume Graph
               </Box>
             </Box>
           </Box>
